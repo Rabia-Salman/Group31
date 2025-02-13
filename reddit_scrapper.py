@@ -11,7 +11,7 @@ CLIENT_ID = 'ffm_9E8Ca89J2WxhWxbihQ'
 CLIENT_SECRET = 'pDp8znm5JCZjLjNUPgse4nwjVke2nA'
 USER_AGENT = 'Reddit-crawler'
 
-!pip install asyncpraw pandas nest_asyncio
+# !pip install asyncpraw pandas nest_asyncio
 
 import requests
 import praw
@@ -21,22 +21,20 @@ import nest_asyncio
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Reddit API Credentials (Replace with your own)
 reddit = praw.Reddit(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
     user_agent="sports_match_scraper:v1.0 (by u/your_reddit_username)"
 )
 
-# Choose sports subreddits
 subreddits = ["cricket", "soccer", "hockey"]
 
 posts = []
 for subreddit_name in subreddits:
     subreddit = reddit.subreddit(subreddit_name)
     print(f"Fetching posts from r/{subreddit_name}")
-    # for post in subreddit.search("Cricket", limit=100):  # Search discussions
-    for post in subreddit.hot(limit=100):  # Fetch top 100 posts
+    # for post in subreddit.search("Cricket", limit=100):
+    for post in subreddit.hot(limit=100):
         posts.append([
             subreddit_name,
             post.title,
@@ -49,37 +47,35 @@ for subreddit_name in subreddits:
             post.created_utc
         ])
 
-# Convert to DataFrame
+
 df = pd.DataFrame(posts, columns=["Subreddit", "Title","Downs", "Score", "Comments", "URL", "Ups", "Upvote_Ratio", "Timestamp"])
 df.to_csv("sports_match_discussions.csv", index=False, encoding="utf-8")
 
 print("CSV file saved: sports_match_discussions.csv")
 
-!kaggle datasets download -d rush4ratio/cricsheet-match-data
+
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
-# Load CSV file
+
 df = pd.read_csv("sports_match_discussions.csv")
 
-# Convert timestamp to datetime
 df["Timestamp"] = pd.to_datetime(df["Timestamp"], unit="s")
 
-# Extract useful time features
+
 df["Hour"] = df["Timestamp"].dt.hour
 df["Day"] = df["Timestamp"].dt.day_name()
 df["Month"] = df["Timestamp"].dt.month_name()
 
-print(df.head())  # Preview data
+print(df.head())
 
-# Top 10 posts by Score
 top_posts = df.nlargest(10, "Score")
 print(top_posts[["Title", "Score", "Subreddit"]])
 
-# Top 10 posts by Comments
+
 top_commented_posts = df.nlargest(10, "Comments")
 print(top_commented_posts[["Title", "Comments", "Subreddit"]])
 
@@ -92,7 +88,7 @@ plt.title("Upvotes vs. Comments on Sports Discussions")
 plt.legend(title="Subreddit")
 plt.show()
 
-# Average Score by Hour
+
 hourly_scores = df.groupby("Hour")["Score"].mean()
 
 plt.figure(figsize=(10, 5))
@@ -103,7 +99,7 @@ plt.title("Best Time to Post Based on Score")
 plt.xticks(range(0, 24))
 plt.show()
 
-!pip install vadersentiment
+# !pip install vadersentiment
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 analyzer = SentimentIntensityAnalyzer()
@@ -116,28 +112,23 @@ plt.ylabel("Number of Posts")
 plt.title("Sentiment Analysis of Sports Discussions")
 plt.show()
 
-!pip install wordcloud nltk
+# !pip install wordcloud nltk
 
 from wordcloud import WordCloud
 import nltk
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 
-# Download stopwords
 nltk.download("stopwords")
 stop_words = set(stopwords.words("english"))
 
-# Combine all titles into a single text
 text = " ".join(df["Title"].astype(str))
 
-# Remove stopwords
 words = [word for word in text.split() if word.lower() not in stop_words]
 filtered_text = " ".join(words)
 
-# Generate Word Cloud
 wordcloud = WordCloud(width=800, height=400, background_color="white", colormap="coolwarm").generate(filtered_text)
 
-# Display the Word Cloud
 plt.figure(figsize=(10, 5))
 plt.imshow(wordcloud, interpolation="bilinear")
 plt.axis("off")
@@ -151,16 +142,13 @@ from nltk.corpus import stopwords
 nltk.download("stopwords")
 stop_words = set(stopwords.words("english"))
 
-# Tokenize words from post titles
 all_words = " ".join(df["Title"].astype(str)).lower().split()
 
-# Remove stopwords
+
 filtered_words = [word for word in all_words if word not in stop_words]
 
-# Get the most common words
+
 word_counts = Counter(filtered_words)
 top_keywords = [word for word, _ in word_counts.most_common(5)]  # Top 5 keywords
 print("Top Reddit Keywords:", top_keywords)
-
-!pip install pytrends
 
