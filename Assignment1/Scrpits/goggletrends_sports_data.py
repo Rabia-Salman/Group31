@@ -20,3 +20,26 @@ timeframe = '2008-01-01 2025-12-31'
 pytrends.build_payload(keyword, cat=0, timeframe=timeframe, geo='', gprop='')
 interest_over_time_df = pytrends.interest_over_time()
 interest_over_time_df.to_csv('Sports_IPL_trends_2008_2025.csv')
+
+regional_interest = pytrends.interest_by_region()
+regional_interest.to_csv('ipl_interest_by_region.csv')
+
+from pytrends.request import TrendReq
+import pandas as pd
+
+pytrends = TrendReq()
+keywords = ["Tata IPL", "Vivo IPL", "Dream11 IPL", "Jio IPL", "Paytm IPL"]
+pytrends.build_payload(keywords, cat=0, timeframe="today 5-y", geo="IN", gprop="")
+
+trends_data = pytrends.interest_over_time()
+print(trends_data)
+trends_data.to_csv("ipl_sponsors_trends.csv")
+
+keywords = ["IPL stock market", "BCCI revenue", "IPL team valuation", "IPL TV rights"]
+
+pytrends.build_payload(keywords, cat=0, timeframe="today 5-y", geo="IN", gprop="")
+trends_data = pytrends.interest_over_time()
+print(trends_data)
+
+trends_data.to_csv("ipl_investors_trends.csv")
+
